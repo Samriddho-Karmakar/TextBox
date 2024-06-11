@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextBox</title>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Local Favicon -->
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #editor-toolbar {
+            margin-bottom: 10px;
+        }
+
+        #editor-toolbar button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        #editor-toolbar button i {
+            margin-right: 5px;
+        }
+
+        #editor-toolbar button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #text-editor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor-toolbar">
+        <button onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
+        <button onclick="execCmd('italic')"><i class="fas fa-italic"></i></button>
+        <button onclick="execCmd('underline')"><i class="fas fa-underline"></i></button>
+        <button onclick="execCmd('strikeThrough')"><i class="fas fa-strikethrough"></i></button>
+        <button onclick="execCmd('justifyLeft')"><i class="fas fa-align-left"></i></button>
+        <button onclick="execCmd('justifyCenter')"><i class="fas fa-align-center"></i></button>
+        <button onclick="execCmd('justifyRight')"><i class="fas fa-align-right"></i></button>
+        <button onclick="execCmd('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
+        <button onclick="execCmd('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+        <button onclick="execCmd('createLink')"><i class="fas fa-link"></i></button>
+        <button onclick="execCmd('unlink')"><i class="fas fa-unlink"></i></button>
+        <button onclick="execCmd('insertImage')"><i class="fas fa-image"></i></button>
+        <button onclick="saveFile()"><i class="fas fa-save"></i></button>
+        <button onclick="openFile()"><i class="fas fa-folder-open"></i></button>
+        <input type="file" id="fileInput" style="display: none;" onchange="loadFile(event)">
+    </div>
+    <div id="text-editor" contenteditable="true">
+        
+    </div>
+    <script>
+        function execCmd(command) {
+            if (command === 'createLink' || command === 'insertImage') {
+                let url = prompt('Enter the link here: ', 'http://');
+                document.execCommand(command, false, url);
+            } else {
+                document.execCommand(command, false, null);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('text-editor').focus();
+        });
+
+        function saveFile() {
+            const text = document.getElementById('text-editor').innerText;  // Get text content
+            let filename = prompt('Enter the filename', 'document.txt');  // Prompt for filename
+            if (filename) {
+                const blob = new Blob([text], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename.endsWith('.txt') ? filename : filename + '.txt';  // Ensure .txt extension
+                a.click();
+            }
+        }
+
+        function openFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function loadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('text-editor').innerText = e.target.result;  // Load text content
+                };
+                reader.readAsText(file);
+            }
+        }
+    </script>
+</body>
+</html>
